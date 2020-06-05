@@ -3,6 +3,7 @@ package cryptopals_test
 import (
 	"encoding/base64"
 	"encoding/hex"
+	"github.com/mathieubrun/cryptopals/algos"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,6 +19,19 @@ func Test_Set1(t *testing.T) {
 		// when
 		bytes, _ := hex.DecodeString(hexStr)
 		result := base64.StdEncoding.EncodeToString(bytes)
+
+		// then
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("Challenge 2 : Fixed XOR", func(t *testing.T) {
+		// given
+		input, _ := hex.DecodeString("1c0111001f010100061a024b53535009181c")
+		key, _ := hex.DecodeString("686974207468652062756c6c277320657965")
+		expected, _ := hex.DecodeString("746865206b696420646f6e277420706c6179")
+
+		// when
+		result := algos.Xor(input, key)
 
 		// then
 		assert.Equal(t, expected, result)
