@@ -36,4 +36,19 @@ func Test_Set1(t *testing.T) {
 		// then
 		assert.Equal(t, expected, result)
 	})
+
+	t.Run("Challenge 3 : Single-byte XOR cipher", func(t *testing.T) {
+		// given
+		input, _ := hex.DecodeString("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+		expected := "Cooking MC's like a pound of bacon"
+		expectedKey := byte(88)
+
+		// when
+		key := algos.FindSingleByteXorKey(input)
+		result := algos.Xor(input, []byte{key})
+
+		// then
+		assert.Equal(t, expectedKey, key)
+		assert.Equal(t, expected, string(result))
+	})
 }
