@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"github.com/mathieubrun/cryptopals/algos"
+	"github.com/mathieubrun/cryptopals/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,14 +42,28 @@ func Test_Set1(t *testing.T) {
 		// given
 		input, _ := hex.DecodeString("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
 		expected := "Cooking MC's like a pound of bacon"
-		expectedKey := byte(88)
+		expectedKey := byte(0x58)
 
 		// when
-		key := algos.FindSingleByteXorKey(input)
-		result := algos.Xor(input, []byte{key})
+		result := algos.GuessSingleByteXorCipher(input)
 
 		// then
-		assert.Equal(t, expectedKey, key)
-		assert.Equal(t, expected, string(result))
+		assert.Equal(t, expectedKey, result.Key)
+		assert.Equal(t, expected, string(result.Plain))
+	})
+
+	t.Run("Challenge 4 : Detect single-character XOR", func(t *testing.T) {
+		// given
+		inputs, err := utils.ReadLines("data/set1_challenge4.txt")
+		expected := "Now that the party is jumping\n"
+		expectedKey := byte(0x35)
+
+		// when
+		result := algos.GuessLineEncodedWithSingleByteXorCipher(inputs)
+
+		// then
+		assert.NoError(t, err)
+		assert.Equal(t, expectedKey, result.Key)
+		assert.Equal(t, expected, string(result.Plain))
 	})
 }

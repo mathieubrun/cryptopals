@@ -18,38 +18,54 @@ func Xor(input []byte, key []byte) (result []byte) {
 	return result
 }
 
-func FindSingleByteXorKey(input []byte) (key byte) {
-	scores := make([]score, math.MaxUint8)
+func GuessLineEncodedWithSingleByteXorCipher(inputs [][]byte) singleByteXorCandidate {
+	candidates := make([]singleByteXorCandidate, len(inputs))
 
-	for i, _ := range scores {
+	for i, input := range inputs {
+		candidates[i] = GuessSingleByteXorCipher(input)
+	}
+
+	return findBestCandidate(candidates)
+}
+
+func GuessSingleByteXorCipher(input []byte) singleByteXorCandidate {
+	candidates := make([]singleByteXorCandidate, math.MaxUint8)
+
+	for i := range candidates {
 		plain := Xor(input, []byte{byte(i)})
 
 		frequency := getByteFrequency(plain)
 
-		scores[i] = score{
+		candidates[i] = singleByteXorCandidate{
 			input,
-			frequency,
-			calculateL2Norm(characterFrequency, frequency),
 			byte(i),
+			plain,
+			frequency,
+			computeL2Norm(characterFrequency, frequency),
 		}
 	}
 
-	sort.Slice(scores, func(i, j int) bool {
-		return scores[i].score < scores[j].score
+	return findBestCandidate(candidates)
+}
+
+type singleByteXorCandidate struct {
+	Input              []byte
+	Key                byte
+	Plain              []byte
+	characterFrequency map[byte]float64
+	l2Norm             float64
+}
+
+func findBestCandidate(candidates []singleByteXorCandidate) singleByteXorCandidate {
+	sort.Slice(candidates, func(i, j int) bool {
+		// smaller deviation from English character frequency is better
+		return candidates[i].l2Norm < candidates[j].l2Norm
 	})
 
-	return scores[0].key
+	return candidates[0]
 }
 
-type score struct {
-	input     []byte
-	frequency map[byte]float64
-	score     float64
-	key       byte
-}
-
-func calculateL2Norm(v1 map[byte]float64, v2 map[byte]float64) (result float64) {
-
+func computeL2Norm(v1 map[byte]float64, v2 map[byte]float64) (result float64) {
 	for k, v := range v1 {
 		result += math.Pow(v2[k]-v, 2)
 	}
@@ -58,9 +74,10 @@ func calculateL2Norm(v1 map[byte]float64, v2 map[byte]float64) (result float64) 
 }
 
 func getByteFrequency(input []byte) map[byte]float64 {
-
 	result := make(map[byte]float64, len(characterFrequency))
-	for k, _ := range characterFrequency {
+
+	// ensure all characters are present in frequency distribution
+	for k := range characterFrequency {
 		result[k] = 0
 	}
 
