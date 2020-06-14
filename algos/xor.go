@@ -46,10 +46,10 @@ func GuessRepeatingKeyXor(input []byte) xorCandidate {
 			key[i] = GuessSingleByteXorCipher(transposed[i]).Key[0]
 		}
 
-		candidates[i] = createCandidate(input, key)
+		candidates[i] = newXorCandidate(input, key)
 	}
 
-	return findBestCandidate(candidates)
+	return findBestXorCandidate(candidates)
 }
 
 func GuessLineEncodedWithSingleByteXorCipher(inputs [][]byte) xorCandidate {
@@ -59,17 +59,17 @@ func GuessLineEncodedWithSingleByteXorCipher(inputs [][]byte) xorCandidate {
 		candidates[i] = GuessSingleByteXorCipher(input)
 	}
 
-	return findBestCandidate(candidates)
+	return findBestXorCandidate(candidates)
 }
 
 func GuessSingleByteXorCipher(input []byte) xorCandidate {
 	candidates := make([]xorCandidate, math.MaxUint8)
 
 	for i := range candidates {
-		candidates[i] = createCandidate(input, []byte{byte(i)})
+		candidates[i] = newXorCandidate(input, []byte{byte(i)})
 	}
 
-	return findBestCandidate(candidates)
+	return findBestXorCandidate(candidates)
 }
 
 type keySizeCandidate struct {
@@ -85,7 +85,7 @@ type xorCandidate struct {
 	l2Norm             float64
 }
 
-func createCandidate(input []byte, key []byte) xorCandidate {
+func newXorCandidate(input []byte, key []byte) xorCandidate {
 	plain := Xor(input, key)
 
 	frequency := getByteFrequency(plain)
@@ -99,7 +99,7 @@ func createCandidate(input []byte, key []byte) xorCandidate {
 	}
 }
 
-func findBestCandidate(candidates []xorCandidate) xorCandidate {
+func findBestXorCandidate(candidates []xorCandidate) xorCandidate {
 	sort.Slice(candidates, func(i, j int) bool {
 		// smaller deviation from English character frequency is better
 		return candidates[i].l2Norm < candidates[j].l2Norm

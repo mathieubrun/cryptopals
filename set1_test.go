@@ -108,4 +108,17 @@ func Test_Set1(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, expected, string(result)[:33])
 	})
+
+	t.Run("Challenge 8 : Detect AES in ECB mode", func(t *testing.T) {
+		// given
+		input, err := utils.ReadLines("data/set1_challenge8.txt")
+		expectedLine := 132
+
+		// when
+		result := algos.DetectECB(input)
+
+		// then
+		assert.NoError(t, err)
+		assert.Equal(t, expectedLine, result.LineNumber)
+	})
 }
