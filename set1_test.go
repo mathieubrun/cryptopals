@@ -94,4 +94,18 @@ func Test_Set1(t *testing.T) {
 		assert.Equal(t, expectedKey, result.Key)
 		assert.Equal(t, expected, string(result.Plain)[:33])
 	})
+
+	t.Run("Challenge 7 : AES in ECB mode", func(t *testing.T) {
+		// given
+		input, err := utils.ReadBase64File("data/set1_challenge7.txt")
+		key := []byte("YELLOW SUBMARINE")
+		expected := "I'm back and I'm ringin' the bell"
+
+		// when
+		result := algos.DecryptECB(input, key, 16)
+
+		// then
+		assert.NoError(t, err)
+		assert.Equal(t, expected, string(result)[:33])
+	})
 }
