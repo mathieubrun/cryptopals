@@ -42,7 +42,7 @@ func Test_Set1(t *testing.T) {
 		// given
 		input, _ := hex.DecodeString("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
 		expected := "Cooking MC's like a pound of bacon"
-		expectedKey := byte(0x58)
+		expectedKey := []byte{0x58}
 
 		// when
 		result := algos.GuessSingleByteXorCipher(input)
@@ -56,7 +56,7 @@ func Test_Set1(t *testing.T) {
 		// given
 		inputs, err := utils.ReadLines("data/set1_challenge4.txt")
 		expected := "Now that the party is jumping\n"
-		expectedKey := byte(0x35)
+		expectedKey := []byte{0x35}
 
 		// when
 		result := algos.GuessLineEncodedWithSingleByteXorCipher(inputs)
@@ -78,5 +78,20 @@ func Test_Set1(t *testing.T) {
 
 		// then
 		assert.Equal(t, expected, result)
+	})
+
+	t.Run("Challenge 6 : Break repeating-key XOR", func(t *testing.T) {
+		// given
+		input, err := utils.ReadBase64File("data/set1_challenge6.txt")
+		expectedKey := []byte("Terminator X: Bring the noise")
+		expected := "I'm back and I'm ringin' the bell"
+
+		// when
+		result := algos.GuessRepeatingKeyXor(input)
+
+		// then
+		assert.NoError(t, err)
+		assert.Equal(t, expectedKey, result.Key)
+		assert.Equal(t, expected, string(result.Plain)[:33])
 	})
 }
