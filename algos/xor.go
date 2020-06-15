@@ -12,4 +12,3 @@ func Xor(input []byte, key []byte) (result []byte) {
 
 	return result
 }
-

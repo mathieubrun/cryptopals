@@ -42,6 +42,7 @@ func DecryptECB(cipherBytes []byte, key []byte, size int) []byte {
 
 func EncryptECB(plainBytes []byte, key []byte, size int) []byte {
 	cipher, _ := aes.NewCipher(key)
+	plainBytes = PKCSPadToBlockSize(plainBytes, size)
 	cipherBytes := make([]byte, len(plainBytes))
 
 	for start := 0; start < len(plainBytes); start += size {
@@ -50,4 +51,3 @@ func EncryptECB(plainBytes []byte, key []byte, size int) []byte {
 
 	return cipherBytes
 }
-

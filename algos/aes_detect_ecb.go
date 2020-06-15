@@ -4,15 +4,11 @@ import (
 	"sort"
 )
 
-func DetectECBOrCBC(cipherbytes []byte) string {
+func IsECB(cipherbytes []byte) bool {
 
 	candidate := DetectECB([][]byte{cipherbytes})
 
-	if candidate.DuplicateBlocks > 0 {
-		return "ECB"
-	}
-
-	return "CBC"
+	return candidate.DuplicateBlocks > 0
 }
 
 type ecbCandidate struct {

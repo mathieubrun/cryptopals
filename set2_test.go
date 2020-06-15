@@ -46,12 +46,31 @@ func Test_Set2(t *testing.T) {
 		cbc := algos.EncryptionOracle(fourBlocks, false)
 
 		// when
-		resultECB := algos.DetectECBOrCBC(ecb)
-		resultCBC := algos.DetectECBOrCBC(cbc)
+		resultECB := algos.IsECB(ecb)
+		resultCBC := algos.IsECB(cbc)
 
 		// then
-		assert.Equal(t, resultCBC, "CBC")
-		assert.Equal(t, resultECB, "ECB")
+		assert.Equal(t, resultCBC, false)
+		assert.Equal(t, resultECB, true)
 	})
 
+	t.Run("Challenge 12 : Byte-at-a-time ECB decryption (Simple)", func(t *testing.T) {
+		// given
+		fourBlocks := []byte("0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF")
+		expectedBlockSize := 16
+		expectedHiddenTextSize := 144
+		expectedHiddenText := "Rollin' in my 5.0\nWith my rag-top down so my hair can blow\nThe girlies on standby waving just to say hi\nDid you stop? No, I just drove by\n\x01\x02\x03\x04\x05\x06"
+
+		// when
+		hiddenTextSize := algos.DetectPaddedHiddenTextLength()
+		blockSize := algos.DetectBlockSize()
+		isECB := algos.IsECB(algos.ECBEncryptionOracle(fourBlocks))
+		hiddenText := algos.GetHiddenText(hiddenTextSize, blockSize)
+
+		// then
+		assert.Equal(t, expectedBlockSize, blockSize)
+		assert.Equal(t, expectedHiddenTextSize, hiddenTextSize)
+		assert.Equal(t, expectedHiddenText, string(hiddenText))
+		assert.Equal(t, true, isECB)
+	})
 }
