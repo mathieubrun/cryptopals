@@ -26,7 +26,7 @@ func Test_Set2(t *testing.T) {
 		// given
 		input, err := utils.ReadBase64File("data/set2_challenge10.txt")
 		key := []byte("YELLOW SUBMARINE")
-		iv := []byte{0,0,0,0,0}
+		iv := []byte{0, 0, 0, 0, 0}
 		expected := "I'm back and I'm ringin' the bell \nA"
 
 		// when
@@ -36,4 +36,22 @@ func Test_Set2(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, expected, string(result)[:36])
 	})
+
+	t.Run("Challenge 11 : An ECB/CBC detection oracle", func(t *testing.T) {
+		// given
+		fourBlocks := []byte("0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF")
+
+		// simplier to ask to oracle to g
+		ecb := algos.EncryptionOracle(fourBlocks, true)
+		cbc := algos.EncryptionOracle(fourBlocks, false)
+
+		// when
+		resultECB := algos.DetectECBOrCBC(ecb)
+		resultCBC := algos.DetectECBOrCBC(cbc)
+
+		// then
+		assert.Equal(t, resultCBC, "CBC")
+		assert.Equal(t, resultECB, "ECB")
+	})
+
 }

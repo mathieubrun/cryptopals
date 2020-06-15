@@ -9,7 +9,7 @@ func TestEncryptCBC(t *testing.T) {
 	type args struct {
 		data []byte
 		key  []byte
-		iv  []byte
+		iv   []byte
 		size int
 	}
 	tests := []struct {
@@ -22,7 +22,7 @@ func TestEncryptCBC(t *testing.T) {
 			args: args{
 				data: []byte("FFEEDDCCBBAA99887766554433221100"),
 				key:  []byte("0123456789ABCDEF"),
-				iv:   []byte{0,0,0},
+				iv:   []byte{0, 0, 0},
 				size: 16,
 			},
 			want: []byte("FFEEDDCCBBAA99887766554433221100"),

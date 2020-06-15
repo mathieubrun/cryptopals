@@ -2,8 +2,45 @@ package algos
 
 import (
 	"crypto/aes"
+	cryptorand "crypto/rand"
+	mathrand "math/rand"
 	"sort"
 )
+
+func GenerateRandomBytes(count int) []byte {
+	bytes := make([]byte, count)
+	_, err := cryptorand.Read(bytes)
+	if err != nil {
+		return nil
+	}
+	return bytes
+}
+
+func EncryptionOracle(plainBytes []byte, ecb bool) []byte {
+	// TODO: optimize
+	plainBytes = append(GenerateRandomBytes(mathrand.Intn(10)), plainBytes...)
+	plainBytes = append(plainBytes, GenerateRandomBytes(mathrand.Intn(10))...)
+	plainBytes = PKCSPad(plainBytes, len(plainBytes) + len(plainBytes) % 16)
+
+	key := GenerateRandomBytes(16)
+	if ecb {
+		return EncryptECB(plainBytes, key, 16)
+	}
+
+	iv := GenerateRandomBytes(16)
+	return EncryptCBC(plainBytes, key, iv, 16)
+}
+
+func DetectECBOrCBC(cipherbytes []byte) string {
+
+	candidate := DetectECB([][]byte{cipherbytes})
+
+	if candidate.DuplicateBlocks > 0 {
+		return "ECB"
+	}
+
+	return "CBC"
+}
 
 func DecryptCBC(cipherBytes []byte, key []byte, iv []byte, size int) []byte {
 	previous := iv
@@ -12,7 +49,7 @@ func DecryptCBC(cipherBytes []byte, key []byte, iv []byte, size int) []byte {
 	for start := 0; start < len(cipherBytes); start += size {
 		plainBlock := DecryptECB(cipherBytes[start:start+size], key, size)
 		copy(plainBytes[start:start+size], Xor(plainBlock, previous))
-		previous = cipherBytes[start:start+size]
+		previous = cipherBytes[start : start+size]
 	}
 
 	return plainBytes
