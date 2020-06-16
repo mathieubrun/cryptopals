@@ -1,14 +1,24 @@
 package algos
 
 import (
+	"crypto/rand"
 	"math"
 )
+
+func generateRandomBytes(count int) []byte {
+	bytes := make([]byte, count)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return nil
+	}
+	return bytes
+}
 
 func hamming(b1 []byte, b2 []byte) int {
 
 	setBitCount := 0
-	for i, b := range b1 {
-		xor := b ^ b2[i]
+	for i, v := range b1 {
+		xor := v ^ b2[i]
 
 		for xor > 0 {
 			setBitCount += int(xor & byte(1))
@@ -19,27 +29,21 @@ func hamming(b1 []byte, b2 []byte) int {
 	return setBitCount
 }
 
-func computeL2Norm(v1 map[byte]float64, v2 map[byte]float64) (result float64) {
-	for k, v := range v1 {
-		result += math.Pow(v2[k]-v, 2)
+func computeDistanceBetweenVectors(v1 []float64, v2 []float64) (result float64) {
+	for i, v := range v1 {
+		d := v2[i] - v
+		result += d * d
 	}
 
 	return math.Sqrt(result)
 }
 
-func getByteFrequency(input []byte) map[byte]float64 {
-	result := make(map[byte]float64, len(characterFrequency))
-
-	// ensure all characters are present in frequency distribution
-	for k := range characterFrequency {
-		result[k] = 0
-	}
+func getByteFrequency(input []byte) []float64 {
+	result := make([]float64, math.MaxUint8+1)
 
 	occurrence := 1 / float64(len(input))
 	for _, v := range input {
-		if _, found := characterFrequency[v]; found {
-			result[v] += occurrence
-		}
+		result[v] += occurrence
 	}
 
 	return result

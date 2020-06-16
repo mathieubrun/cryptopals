@@ -2,45 +2,7 @@ package algos
 
 import (
 	"crypto/aes"
-	cryptorand "crypto/rand"
-	mathrand "math/rand"
-	"sort"
 )
-
-func GenerateRandomBytes(count int) []byte {
-	bytes := make([]byte, count)
-	_, err := cryptorand.Read(bytes)
-	if err != nil {
-		return nil
-	}
-	return bytes
-}
-
-func EncryptionOracle(plainBytes []byte, ecb bool) []byte {
-	// TODO: optimize
-	plainBytes = append(GenerateRandomBytes(mathrand.Intn(10)), plainBytes...)
-	plainBytes = append(plainBytes, GenerateRandomBytes(mathrand.Intn(10))...)
-	plainBytes = PKCSPad(plainBytes, len(plainBytes) + len(plainBytes) % 16)
-
-	key := GenerateRandomBytes(16)
-	if ecb {
-		return EncryptECB(plainBytes, key, 16)
-	}
-
-	iv := GenerateRandomBytes(16)
-	return EncryptCBC(plainBytes, key, iv, 16)
-}
-
-func DetectECBOrCBC(cipherbytes []byte) string {
-
-	candidate := DetectECB([][]byte{cipherbytes})
-
-	if candidate.DuplicateBlocks > 0 {
-		return "ECB"
-	}
-
-	return "CBC"
-}
 
 func DecryptCBC(cipherBytes []byte, key []byte, iv []byte, size int) []byte {
 	previous := iv
@@ -89,61 +51,3 @@ func EncryptECB(plainBytes []byte, key []byte, size int) []byte {
 	return cipherBytes
 }
 
-type ecbCandidate struct {
-	LineNumber      int
-	Input           []byte
-	KeySize         int
-	DuplicateBlocks int
-}
-
-func DetectECB(inputs [][]byte) ecbCandidate {
-	var candidates []ecbCandidate
-
-	// aes can use 3 keysizes
-	for _, keySize := range []int{16, 24, 32} {
-		for line, input := range inputs {
-
-			// assume ciphertext length is multiple of keysize
-			if len(input)%keySize == 0 {
-
-				candidate := ecbCandidate{
-					line,
-					input,
-					keySize,
-					0,
-				}
-
-				chunks := chunk(input, keySize)
-
-				// compare blocks
-				for i, chunk1 := range chunks {
-					for j, chunk2 := range chunks {
-
-						// once
-						if j <= i {
-							continue
-						}
-
-						// if hamming distance is 0, blocks are the same
-						if hamming(chunk1, chunk2) == 0 {
-							candidate.DuplicateBlocks++
-						}
-					}
-				}
-
-				candidates = append(candidates, candidate)
-			}
-		}
-	}
-
-	return findBestECBCandidate(candidates)
-}
-
-func findBestECBCandidate(candidates []ecbCandidate) ecbCandidate {
-	sort.Slice(candidates, func(i, j int) bool {
-		// smaller deviation from English character frequency is better
-		return candidates[i].DuplicateBlocks > candidates[j].DuplicateBlocks
-	})
-
-	return candidates[0]
-}

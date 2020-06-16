@@ -1,6 +1,20 @@
 package algos
 
-var characterFrequency = map[byte]float64{
+import "math"
+
+var characterFrequency = createFrequencyArray()
+
+func createFrequencyArray() []float64 {
+	result := make([]float64, math.MaxUint8+1)
+
+	for i := range result {
+		result[i] = characterFrequencyMap[byte(i)]
+	}
+
+	return result
+}
+
+var characterFrequencyMap = map[byte]float64{
 	'\t': 0.000057,
 	'\n': 0.020827,
 	23:   0.000000,

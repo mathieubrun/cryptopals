@@ -54,7 +54,7 @@ func Test_Set1(t *testing.T) {
 
 	t.Run("Challenge 4 : Detect single-character XOR", func(t *testing.T) {
 		// given
-		inputs, err := utils.ReadLines("data/set1_challenge4.txt")
+		inputs, err := utils.ReadLinesAsBytes("data/set1_challenge4.txt")
 		expected := "Now that the party is jumping\n"
 		expectedKey := []byte{0x35}
 
@@ -111,7 +111,7 @@ func Test_Set1(t *testing.T) {
 
 	t.Run("Challenge 8 : Detect AES in ECB mode", func(t *testing.T) {
 		// given
-		input, err := utils.ReadLines("data/set1_challenge8.txt")
+		input, err := utils.ReadLinesAsBytes("data/set1_challenge8.txt")
 		expectedLine := 132
 
 		// when

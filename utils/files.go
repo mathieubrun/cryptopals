@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func ReadLines(path string) ([][]byte, error) {
+func ReadLinesAsBytes(path string) ([][]byte, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
