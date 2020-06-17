@@ -13,8 +13,8 @@ func GetHiddenText(hiddenTextLength int, blockSize int) []byte {
 
 	blockCount := hiddenTextLength / blockSize
 
-	discoveredBytes := make([]byte, hiddenTextLength)
 	// bytes can be discovered by padding known bytes before unknown bytes
+	discoveredBytes := make([]byte, hiddenTextLength)
 	paddingBytes := make([]byte, hiddenTextLength)
 
 	for attackedBlock := 0; attackedBlock < blockCount; attackedBlock++ {

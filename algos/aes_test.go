@@ -32,7 +32,7 @@ func TestEncryptCBC(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			encrypted := EncryptCBC(tt.args.data, tt.args.key, tt.args.iv, tt.args.size)
 			if got := DecryptCBC(encrypted, tt.args.key, tt.args.iv, tt.args.size); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("EncryptECB() = %v, want %v", got, tt.want)
+				t.Errorf("CBC() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -73,4 +73,19 @@ func Test_Set2(t *testing.T) {
 		assert.Equal(t, expectedHiddenText, string(hiddenText))
 		assert.Equal(t, true, isECB)
 	})
+
+	t.Run("Challenge 13 : ECB cut-and-paste", func(t *testing.T) {
+		// given
+		encryptedProfile := algos.EncryptProfile("test@example.com")
+
+		// when
+		profile, err := algos.DecryptProfile(encryptedProfile)
+		fakeProfile := algos.ECBCutAndPaste()
+		fakeProfileDecrypted, err := algos.DecryptProfile(fakeProfile)
+
+		// then
+		assert.NoError(t, err)
+		assert.Equal(t, "test@example.com", profile.Email)
+		assert.Equal(t, "admin", fakeProfileDecrypted.Role)
+	})
 }

@@ -1,12 +1,7 @@
 package algos
 
 func PKCSPadToBlockSize(input []byte, blockSize int) []byte {
-	remainder := len(input)%blockSize
-	if remainder > 0 {
-		return PKCSPad(input, len(input)+blockSize-len(input)%blockSize)
-	}
-	return PKCSPad(input, len(input))
-
+	return PKCSPad(input, len(input)+blockSize-len(input)%blockSize)
 }
 
 func PKCSPad(input []byte, size int) []byte {
