@@ -26,6 +26,8 @@ func ECBCutAndPaste() []byte {
 	return append(cookieDough[0:16], append(cookieDough[32:48], cookieDough[16:32]...)...)
 }
 
+var aesKey = GenerateRandomBytes(16)
+
 func EncryptProfile(profile string) []byte {
 	return EncryptECB([]byte(profileFor(profile)), aesKey, 16)
 }

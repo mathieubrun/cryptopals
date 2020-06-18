@@ -36,7 +36,7 @@ func EncryptCBC(plainBytes []byte, key []byte, iv []byte, size int) []byte {
 
 	for start := 0; start < len(plainBytes); start += size {
 		cipher.Encrypt(cipherBytes[start:start+size], Xor(plainBytes[start:start+size], previous))
-		previous = cipherBytes[start:start+size]
+		previous = cipherBytes[start : start+size]
 	}
 
 	return cipherBytes

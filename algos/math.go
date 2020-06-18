@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-func generateRandomBytes(count int) []byte {
+func GenerateRandomBytes(count int) []byte {
 	bytes := make([]byte, count)
 	_, err := rand.Read(bytes)
 	if err != nil {

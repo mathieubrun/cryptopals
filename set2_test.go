@@ -58,17 +58,22 @@ func Test_Set2(t *testing.T) {
 		// given
 		fourBlocks := []byte("0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF")
 		expectedBlockSize := 16
-		expectedHiddenTextSize := 144
-		expectedHiddenText := "Rollin' in my 5.0\nWith my rag-top down so my hair can blow\nThe girlies on standby waving just to say hi\nDid you stop? No, I just drove by\n\x01\x02\x03\x04\x05\x06"
+		expectedHiddenTextSize := 138
+		expectedPaddingSize := 6
+		expectedHiddenText := "Rollin' in my 5.0\nWith my rag-top down so my hair can blow\nThe girlies on standby waving just to say hi\nDid you stop? No, I just drove by\n"
+		randomKey := algos.GenerateRandomBytes(16)
+		oracle := algos.MakeECBEncryptionOracle(randomKey, nil, expectedBlockSize)
 
 		// when
-		hiddenTextSize := algos.DetectPaddedHiddenTextLength()
-		blockSize := algos.DetectBlockSize()
-		isECB := algos.IsECB(algos.ECBEncryptionOracle(fourBlocks))
-		hiddenText := algos.GetHiddenText(hiddenTextSize, blockSize)
+		blockSize := algos.DetectBlockSize(oracle)
+		paddingSize := algos.DetectPaddingLength(0, blockSize, oracle)
+		hiddenTextSize := algos.DetectHiddenTextLength(0, paddingSize, blockSize, oracle)
+		isECB := algos.IsECB(oracle(fourBlocks))
+		hiddenText := algos.DetectHiddenText(0, hiddenTextSize, paddingSize, blockSize, oracle)
 
 		// then
 		assert.Equal(t, expectedBlockSize, blockSize)
+		assert.Equal(t, expectedPaddingSize, paddingSize)
 		assert.Equal(t, expectedHiddenTextSize, hiddenTextSize)
 		assert.Equal(t, expectedHiddenText, string(hiddenText))
 		assert.Equal(t, true, isECB)
@@ -87,5 +92,34 @@ func Test_Set2(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "test@example.com", profile.Email)
 		assert.Equal(t, "admin", fakeProfileDecrypted.Role)
+	})
+
+	t.Run("Challenge 14 : Byte-at-a-time ECB decryption (Harder)", func(t *testing.T) {
+		// given
+		fourBlocks := []byte("0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF")
+		expectedPrefixSize := 21
+		expectedBlockSize := 16
+		expectedHiddenTextSize := 138
+		expectedPaddingSize := 6
+		expectedHiddenText := "Rollin' in my 5.0\nWith my rag-top down so my hair can blow\nThe girlies on standby waving just to say hi\nDid you stop? No, I just drove by\n"
+		randomKey := algos.GenerateRandomBytes(16)
+		randomPrefix := algos.GenerateRandomBytes(expectedPrefixSize)
+		oracle := algos.MakeECBEncryptionOracle(randomKey, randomPrefix, expectedBlockSize)
+
+		// when
+		blockSize := algos.DetectBlockSize(oracle)
+		prefixLength := algos.DetectPrefixLength(blockSize, oracle)
+		paddingSize := algos.DetectPaddingLength(prefixLength, blockSize, oracle)
+		hiddenTextSize := algos.DetectHiddenTextLength(prefixLength, paddingSize, blockSize, oracle)
+		isECB := algos.IsECB(oracle(fourBlocks))
+		hiddenText := algos.DetectHiddenText(prefixLength, hiddenTextSize, paddingSize, blockSize, oracle)
+
+		// then
+		assert.Equal(t, expectedBlockSize, blockSize)
+		assert.Equal(t, expectedPaddingSize, paddingSize)
+		assert.Equal(t, expectedPrefixSize, prefixLength)
+		assert.Equal(t, expectedHiddenTextSize, hiddenTextSize)
+		assert.Equal(t, expectedHiddenText, string(hiddenText))
+		assert.Equal(t, true, isECB)
 	})
 }
