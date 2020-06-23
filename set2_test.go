@@ -122,4 +122,19 @@ func Test_Set2(t *testing.T) {
 		assert.Equal(t, expectedHiddenText, string(hiddenText))
 		assert.Equal(t, true, isECB)
 	})
+
+	t.Run("Challenge 15 : PKCS#7 padding validation", func(t *testing.T) {
+		// given
+		validPadding := []byte("ICE ICE BABY\x04\x04\x04\x04")
+		expectedResult := []byte("ICE ICE BABY")
+		invalidPadding := []byte("ICE ICE BABY\x05\x05\x05\x05")
+
+		// when
+		valid, _ := algos.RemovePKCSPad(validPadding)
+		_, err := algos.RemovePKCSPad(invalidPadding)
+
+		// then
+		assert.Error(t, err)
+		assert.Equal(t, expectedResult, valid)
+	})
 }
