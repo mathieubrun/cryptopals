@@ -1,7 +1,9 @@
-package algos
+package aes_attacks
 
 import (
 	"fmt"
+	"github.com/mathieubrun/cryptopals/algos"
+	"github.com/mathieubrun/cryptopals/algos/aes"
 	"strconv"
 	"strings"
 )
@@ -26,14 +28,19 @@ func ECBCutAndPaste() []byte {
 	return append(cookieDough[0:16], append(cookieDough[32:48], cookieDough[16:32]...)...)
 }
 
-var aesKey = GenerateRandomBytes(16)
+var aesKey = algos.GenerateRandomBytes(16)
 
 func EncryptProfile(profile string) []byte {
-	return EncryptECB([]byte(profileFor(profile)), aesKey, 16)
+	return aes.EncryptECB([]byte(profileFor(profile)), aesKey, 16)
 }
 
 func DecryptProfile(cipherProfile []byte) (*user, error) {
-	return parseProfileString(string(DecryptECB(cipherProfile, aesKey, 16)))
+	plain, err := aes.DecryptECB(cipherProfile, aesKey, 16)
+	if err != nil {
+		return nil, err
+	}
+
+	return parseProfileString(string(plain))
 }
 
 func parseProfileString(str string) (*user, error) {

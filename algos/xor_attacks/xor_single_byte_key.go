@@ -1,6 +1,8 @@
-package algos
+package xor_attacks
 
 import (
+	"github.com/mathieubrun/cryptopals/algos"
+	"github.com/mathieubrun/cryptopals/algos/xor"
 	"math"
 	"sort"
 )
@@ -33,15 +35,15 @@ type xorKeyCandidate struct {
 }
 
 func newCandidateForKey(input []byte, key []byte) xorKeyCandidate {
-	plain := Xor(input, key)
+	plain := xor.Xor(input, key)
 
-	frequency := getByteFrequency(plain)
+	frequency := algos.GetByteFrequency(plain)
 
 	return xorKeyCandidate{
 		input,
 		key,
 		plain,
-		computeDistanceBetweenVectors(characterFrequency, frequency),
+		algos.ComputeDistanceBetweenVectors(algos.CharacterFrequency, frequency),
 	}
 }
 

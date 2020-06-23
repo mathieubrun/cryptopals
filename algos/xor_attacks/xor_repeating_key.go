@@ -1,6 +1,7 @@
-package algos
+package xor_attacks
 
 import (
+	"github.com/mathieubrun/cryptopals/algos"
 	"sort"
 )
 
@@ -16,11 +17,11 @@ func GuessRepeatingKeyXor(input []byte) xorKeyCandidate {
 		keySize := size.keySize
 
 		// Now that you probably know the KEYSIZE: break the ciphertext into blocks of KEYSIZE length.
-		blocks := chunk(input, keySize)
+		blocks := algos.Chunk(input, keySize)
 
 		// Now transpose the blocks: make a block that is the first byte of every block,
 		// and a block that is the second byte of every block, and so on.
-		transposed := transpose(blocks)
+		transposed := algos.Transpose(blocks)
 
 		// Solve each block as if it was single-character XOR. You already have code to do this.
 		// For each block, the single-byte XOR key that produces the best looking histogram
@@ -55,13 +56,13 @@ func getKeySizeCandidates(input []byte) []keySizeCandidate {
 		// Or take 4 KEYSIZE blocks instead of 2 and average the distances.
 
 		blocksToCompare := 4
-		keyBytesBlocks := chunk(input, keySize)[:blocksToCompare]
+		keyBytesBlocks := algos.Chunk(input, keySize)[:blocksToCompare]
 		editDistance := float64(0)
 
 		// and find the edit distance between them.
 		// Normalize this result by dividing by KEYSIZE.
 		for i := 0; i < blocksToCompare; i += 2 {
-			editDistance += float64(hamming(keyBytesBlocks[i], keyBytesBlocks[i+1])) / float64(keySize)
+			editDistance += float64(algos.Hamming(keyBytesBlocks[i], keyBytesBlocks[i+1])) / float64(keySize)
 		}
 
 		keySizeScores = append(keySizeScores, keySizeCandidate{

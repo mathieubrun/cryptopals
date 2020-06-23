@@ -3,7 +3,10 @@ package cryptopals_test
 import (
 	"encoding/base64"
 	"encoding/hex"
-	"github.com/mathieubrun/cryptopals/algos"
+	"github.com/mathieubrun/cryptopals/algos/aes"
+	"github.com/mathieubrun/cryptopals/algos/aes_attacks"
+	"github.com/mathieubrun/cryptopals/algos/xor"
+	"github.com/mathieubrun/cryptopals/algos/xor_attacks"
 	"github.com/mathieubrun/cryptopals/utils"
 	"testing"
 
@@ -32,7 +35,7 @@ func Test_Set1(t *testing.T) {
 		expected, _ := hex.DecodeString("746865206b696420646f6e277420706c6179")
 
 		// when
-		result := algos.Xor(input, key)
+		result := xor.Xor(input, key)
 
 		// then
 		assert.Equal(t, expected, result)
@@ -45,7 +48,7 @@ func Test_Set1(t *testing.T) {
 		expectedKey := []byte{0x58}
 
 		// when
-		result := algos.GuessSingleByteXorCipher(input)
+		result := xor_attacks.GuessSingleByteXorCipher(input)
 
 		// then
 		assert.Equal(t, expectedKey, result.Key)
@@ -59,7 +62,7 @@ func Test_Set1(t *testing.T) {
 		expectedKey := []byte{0x35}
 
 		// when
-		result := algos.GuessLineEncodedWithSingleByteXorCipher(inputs)
+		result := xor_attacks.GuessLineEncodedWithSingleByteXorCipher(inputs)
 
 		// then
 		assert.NoError(t, err)
@@ -74,7 +77,7 @@ func Test_Set1(t *testing.T) {
 		expected, _ := hex.DecodeString("0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
 
 		// when
-		result := algos.Xor(input, key)
+		result := xor.Xor(input, key)
 
 		// then
 		assert.Equal(t, expected, result)
@@ -87,7 +90,7 @@ func Test_Set1(t *testing.T) {
 		expected := "I'm back and I'm ringin' the bell"
 
 		// when
-		result := algos.GuessRepeatingKeyXor(input)
+		result := xor_attacks.GuessRepeatingKeyXor(input)
 
 		// then
 		assert.NoError(t, err)
@@ -102,7 +105,7 @@ func Test_Set1(t *testing.T) {
 		expected := "I'm back and I'm ringin' the bell"
 
 		// when
-		result := algos.DecryptECB(input, key, 16)
+		result, _ := aes.DecryptECB(input, key, 16)
 
 		// then
 		assert.NoError(t, err)
@@ -115,7 +118,7 @@ func Test_Set1(t *testing.T) {
 		expectedLine := 132
 
 		// when
-		result := algos.DetectECB(input)
+		result := aes_attacks.DetectECB(input)
 
 		// then
 		assert.NoError(t, err)

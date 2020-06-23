@@ -1,4 +1,4 @@
-package algos
+package aes_attacks
 
 import (
 	"reflect"

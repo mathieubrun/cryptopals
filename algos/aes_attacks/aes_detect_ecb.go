@@ -1,6 +1,7 @@
-package algos
+package aes_attacks
 
 import (
+	"github.com/mathieubrun/cryptopals/algos"
 	"sort"
 )
 
@@ -35,7 +36,7 @@ func DetectECB(inputs [][]byte) ecbCandidate {
 					0,
 				}
 
-				chunks := chunk(input, keySize)
+				chunks := algos.Chunk(input, keySize)
 
 				// compare blocks
 				for i, chunk1 := range chunks {
@@ -47,7 +48,7 @@ func DetectECB(inputs [][]byte) ecbCandidate {
 						}
 
 						// if hamming distance is 0, blocks are the same
-						if hamming(chunk1, chunk2) == 0 {
+						if algos.Hamming(chunk1, chunk2) == 0 {
 							candidate.DuplicateBlocks++
 						}
 					}

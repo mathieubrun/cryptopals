@@ -1,4 +1,4 @@
-package algos
+package xor
 
 func Xor(input []byte, key []byte) (result []byte) {
 	inputLength := len(input)

@@ -1,12 +1,14 @@
-package algos
+package aes
 
 import (
 	"crypto/aes"
+	"github.com/mathieubrun/cryptopals/algos"
+	"github.com/mathieubrun/cryptopals/algos/xor"
 )
 
 func EncryptECB(plainBytes []byte, key []byte, size int) []byte {
 	cipher, _ := aes.NewCipher(key)
-	plainBytes = PKCSPadToBlockSize(plainBytes, size)
+	plainBytes = algos.PKCSPadToBlockSize(plainBytes, size)
 	cipherBytes := make([]byte, len(plainBytes))
 
 	for start := 0; start < len(plainBytes); start += size {
@@ -16,7 +18,7 @@ func EncryptECB(plainBytes []byte, key []byte, size int) []byte {
 	return cipherBytes
 }
 
-func DecryptECB(cipherBytes []byte, key []byte, size int) []byte {
+func DecryptECB(cipherBytes []byte, key []byte, size int) ([]byte, error) {
 	cipher, _ := aes.NewCipher(key)
 	plainBytes := make([]byte, len(cipherBytes))
 
@@ -24,35 +26,43 @@ func DecryptECB(cipherBytes []byte, key []byte, size int) []byte {
 		cipher.Decrypt(plainBytes[start:start+size], cipherBytes[start:start+size])
 	}
 
-	padCount := int(plainBytes[len(plainBytes)-1])
-	return plainBytes[:len(plainBytes)-padCount]
+	plain, err := algos.RemovePKCSPad(plainBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return plain, nil
 }
 
 func EncryptCBC(plainBytes []byte, key []byte, iv []byte, size int) []byte {
 	cipher, _ := aes.NewCipher(key)
 	previous := iv
-	plainBytes = PKCSPadToBlockSize(plainBytes, size)
+	plainBytes = algos.PKCSPadToBlockSize(plainBytes, size)
 	cipherBytes := make([]byte, len(plainBytes))
 
 	for start := 0; start < len(plainBytes); start += size {
-		cipher.Encrypt(cipherBytes[start:start+size], Xor(plainBytes[start:start+size], previous))
+		cipher.Encrypt(cipherBytes[start:start+size], xor.Xor(plainBytes[start:start+size], previous))
 		previous = cipherBytes[start : start+size]
 	}
 
 	return cipherBytes
 }
 
-func DecryptCBC(cipherBytes []byte, key []byte, iv []byte, size int) []byte {
+func DecryptCBC(cipherBytes []byte, key []byte, iv []byte, size int) ([]byte, error) {
 	cipher, _ := aes.NewCipher(key)
 	previous := iv
 	plainBytes := make([]byte, len(cipherBytes))
 
 	for start := 0; start < len(cipherBytes); start += size {
 		cipher.Decrypt(plainBytes[start:start+size], cipherBytes[start:start+size])
-		XorInPlace(plainBytes[start:start+size], previous)
+		xor.XorInPlace(plainBytes[start:start+size], previous)
 		previous = cipherBytes[start : start+size]
 	}
 
-	padCount := int(plainBytes[len(plainBytes)-1])
-	return plainBytes[:len(plainBytes)-padCount]
+	plain, err := algos.RemovePKCSPad(plainBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return plain, nil
 }

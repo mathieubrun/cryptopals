@@ -1,7 +1,8 @@
-package algos
+package aes_attacks
 
 import (
 	"bytes"
+	"github.com/mathieubrun/cryptopals/algos"
 	"math"
 )
 
@@ -82,12 +83,12 @@ func DetectPaddingLength(prefixLen int, blockSize int, oracle func(plainBytes []
 	offset := getPrefixPaddingLen(prefixLen, blockSize)
 
 	size := 0
-	first := oracle(GenerateRandomBytes(size + offset))
-	second := oracle(GenerateRandomBytes(size + offset))
+	first := oracle(algos.GenerateRandomBytes(size + offset))
+	second := oracle(algos.GenerateRandomBytes(size + offset))
 
 	for len(second) == len(first) {
 		size++
-		second = oracle(GenerateRandomBytes(size + offset))
+		second = oracle(algos.GenerateRandomBytes(size + offset))
 	}
 
 	return size
@@ -95,12 +96,12 @@ func DetectPaddingLength(prefixLen int, blockSize int, oracle func(plainBytes []
 
 func DetectBlockSize(oracle func(plainBytes []byte) []byte) int {
 	length := 1
-	first := oracle(GenerateRandomBytes(length))
-	second := oracle(GenerateRandomBytes(length))
+	first := oracle(algos.GenerateRandomBytes(length))
+	second := oracle(algos.GenerateRandomBytes(length))
 
 	for len(second) == len(first) {
 		length++
-		second = oracle(GenerateRandomBytes(length))
+		second = oracle(algos.GenerateRandomBytes(length))
 	}
 
 	return len(second) - len(first)
@@ -115,7 +116,7 @@ func countIdentialBlocks(blockSize int, cipherBytesLen int, targetBytes []byte) 
 	identicalBlockFound := 0
 
 	for i := 1; i < cipherBytesLen/blockSize; i++ {
-		if hamming(targetBytes[i*blockSize-blockSize:i*blockSize], targetBytes[i*blockSize:i*blockSize+blockSize]) == 0 {
+		if algos.Hamming(targetBytes[i*blockSize-blockSize:i*blockSize], targetBytes[i*blockSize:i*blockSize+blockSize]) == 0 {
 			firstIdenticalBlockIndex = i
 			identicalBlockFound++
 		}

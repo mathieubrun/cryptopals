@@ -1,6 +1,6 @@
 package algos
 
-func transpose(blocks [][]byte) [][]byte {
+func Transpose(blocks [][]byte) [][]byte {
 	transposed := make([][]byte, len(blocks[0]))
 
 	for i, _ := range transposed {
@@ -14,7 +14,7 @@ func transpose(blocks [][]byte) [][]byte {
 	return transposed
 }
 
-func chunk(input []byte, size int) [][]byte {
+func Chunk(input []byte, size int) [][]byte {
 	chunks := len(input) / size
 	result := make([][]byte, chunks)
 

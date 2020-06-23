@@ -1,7 +1,8 @@
-package algos
+package aes
 
 import (
 	"encoding/base64"
+	"github.com/mathieubrun/cryptopals/algos"
 	"math/rand"
 )
 
@@ -22,15 +23,15 @@ func MakeECBEncryptionOracle(aesKey []byte, prefix []byte, blockSize int) func(p
 
 func EncryptionOracle(plainBytes []byte, ecb bool) []byte {
 	// TODO: optimize
-	plainBytes = append(GenerateRandomBytes(rand.Intn(10)), plainBytes...)
-	plainBytes = append(plainBytes, GenerateRandomBytes(rand.Intn(10))...)
-	plainBytes = PKCSPad(plainBytes, len(plainBytes)+len(plainBytes)%16)
+	plainBytes = append(algos.GenerateRandomBytes(rand.Intn(10)), plainBytes...)
+	plainBytes = append(plainBytes, algos.GenerateRandomBytes(rand.Intn(10))...)
+	plainBytes = algos.PKCSPad(plainBytes, len(plainBytes)+len(plainBytes)%16)
 
-	key := GenerateRandomBytes(16)
+	key := algos.GenerateRandomBytes(16)
 	if ecb {
 		return EncryptECB(plainBytes, key, 16)
 	}
 
-	iv := GenerateRandomBytes(16)
+	iv := algos.GenerateRandomBytes(16)
 	return EncryptCBC(plainBytes, key, iv, 16)
 }

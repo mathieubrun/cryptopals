@@ -14,7 +14,7 @@ func GenerateRandomBytes(count int) []byte {
 	return bytes
 }
 
-func hamming(b1 []byte, b2 []byte) int {
+func Hamming(b1 []byte, b2 []byte) int {
 
 	setBitCount := 0
 	for i, v := range b1 {
@@ -29,7 +29,7 @@ func hamming(b1 []byte, b2 []byte) int {
 	return setBitCount
 }
 
-func computeDistanceBetweenVectors(v1 []float64, v2 []float64) (result float64) {
+func ComputeDistanceBetweenVectors(v1 []float64, v2 []float64) (result float64) {
 	for i, v := range v1 {
 		d := v2[i] - v
 		result += d * d
@@ -38,7 +38,7 @@ func computeDistanceBetweenVectors(v1 []float64, v2 []float64) (result float64) 
 	return math.Sqrt(result)
 }
 
-func getByteFrequency(input []byte) []float64 {
+func GetByteFrequency(input []byte) []float64 {
 	result := make([]float64, math.MaxUint8+1)
 
 	occurrence := 1 / float64(len(input))

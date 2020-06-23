@@ -2,7 +2,7 @@ package algos
 
 import "math"
 
-var characterFrequency = createFrequencyArray()
+var CharacterFrequency = createFrequencyArray()
 
 func createFrequencyArray() []float64 {
 	result := make([]float64, math.MaxUint8+1)
