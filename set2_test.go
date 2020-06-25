@@ -1,6 +1,7 @@
 package cryptopals_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/mathieubrun/cryptopals/algos/aes"
@@ -140,5 +141,21 @@ func Test_Set2(t *testing.T) {
 		// then
 		assert.Error(t, err)
 		assert.Equal(t, expectedResult, valid)
+	})
+
+	t.Run("Challenge 16 : CBC bitflipping attacks", func(t *testing.T) {
+		// given
+		blockSize := 16
+		editBytes := []byte(";admin=true;")
+		aesKey := algos.GenerateRandomBytes(16)
+		aesIV := algos.GenerateRandomBytes(16)
+		oracle := aes.MakeCBCEncryptionOracle(aesKey, aesIV, blockSize)
+
+		editedBytes := aes_attacks.EditCBC(blockSize, editBytes, oracle)
+		plainBytes, err := aes.DecryptCBC(editedBytes, aesKey, aesIV, blockSize)
+
+		// then
+		assert.NoError(t, err)
+		assert.True(t, strings.Contains(string(plainBytes), string(editBytes)))
 	})
 }
