@@ -67,7 +67,7 @@ func Test_Set2(t *testing.T) {
 		expectedPaddingSize := 6
 		expectedHiddenText := "Rollin' in my 5.0\nWith my rag-top down so my hair can blow\nThe girlies on standby waving just to say hi\nDid you stop? No, I just drove by\n"
 		randomKey := algos.GenerateRandomBytes(16)
-		oracle := aes.MakeECBEncryptionOracle(randomKey, nil, expectedBlockSize)
+		oracle := aes.MakeECBEncryptionOracle(randomKey, nil)
 
 		// when
 		blockSize := aes_attacks.DetectBlockSize(oracle)
@@ -109,7 +109,7 @@ func Test_Set2(t *testing.T) {
 		expectedHiddenText := "Rollin' in my 5.0\nWith my rag-top down so my hair can blow\nThe girlies on standby waving just to say hi\nDid you stop? No, I just drove by\n"
 		randomKey := algos.GenerateRandomBytes(16)
 		randomPrefix := algos.GenerateRandomBytes(expectedPrefixSize)
-		oracle := aes.MakeECBEncryptionOracle(randomKey, randomPrefix, expectedBlockSize)
+		oracle := aes.MakeECBEncryptionOracle(randomKey, randomPrefix)
 
 		// when
 		blockSize := aes_attacks.DetectBlockSize(oracle)
@@ -135,8 +135,8 @@ func Test_Set2(t *testing.T) {
 		invalidPadding := []byte("ICE ICE BABY\x05\x05\x05\x05")
 
 		// when
-		valid, _ := algos.RemovePKCSPad(validPadding)
-		_, err := algos.RemovePKCSPad(invalidPadding)
+		valid, _ := algos.RemovePKCSPad(validPadding, 16)
+		_, err := algos.RemovePKCSPad(invalidPadding, 16)
 
 		// then
 		assert.Error(t, err)

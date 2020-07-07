@@ -13,9 +13,9 @@ func TestEncryptCBC(t *testing.T) {
 		size int
 	}
 	tests := []struct {
-		name string
-		args args
-		want []byte
+		name    string
+		args    args
+		want    []byte
 		wantErr bool
 	}{
 		{
@@ -26,7 +26,7 @@ func TestEncryptCBC(t *testing.T) {
 				iv:   []byte{0, 0, 0},
 				size: 16,
 			},
-			want: []byte("FFEEDDCCBBAA99887766554433221100"),
+			want:    []byte("FFEEDDCCBBAA99887766554433221100"),
 			wantErr: false,
 		},
 	}
@@ -52,9 +52,9 @@ func TestEncryptECB(t *testing.T) {
 		size int
 	}
 	tests := []struct {
-		name string
-		args args
-		want []byte
+		name    string
+		args    args
+		want    []byte
 		wantErr bool
 	}{
 		{
@@ -64,7 +64,7 @@ func TestEncryptECB(t *testing.T) {
 				key:  []byte("0123456789ABCDEF"),
 				size: 16,
 			},
-			want: []byte("FFEEDDCCBBAA99887766554433221100"),
+			want:    []byte("FFEEDDCCBBAA99887766554433221100"),
 			wantErr: false,
 		},
 	}

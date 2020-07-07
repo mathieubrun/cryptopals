@@ -17,9 +17,12 @@ func PKCSPad(input []byte, size int) []byte {
 	return append(input, padding...)
 }
 
-func RemovePKCSPad(input []byte) ([]byte, error) {
+func RemovePKCSPad(input []byte, size int) ([]byte, error) {
 	len := len(input)
 	padCount := int(input[len-1])
+	if padCount <= 0 || padCount > size {
+		return nil, fmt.Errorf("invalid padding")
+	}
 
 	for _, b := range input[len-padCount:] {
 		if b != input[len-1] {

@@ -9,7 +9,7 @@ func EditCBC(blockSize int, editBytes []byte, oracle func(plainBytes []byte) []b
 
 	start := 48
 	end := start + len(editBytes)
-	attackText := []byte(strings.Repeat("a", blockSize * 4))
+	attackText := []byte(strings.Repeat("a", blockSize*4))
 
 	// when
 	cipherBytes := oracle(attackText)

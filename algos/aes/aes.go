@@ -26,7 +26,7 @@ func DecryptECB(cipherBytes []byte, key []byte, size int) ([]byte, error) {
 		cipher.Decrypt(plainBytes[start:start+size], cipherBytes[start:start+size])
 	}
 
-	plain, err := algos.RemovePKCSPad(plainBytes)
+	plain, err := algos.RemovePKCSPad(plainBytes, size)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func DecryptCBC(cipherBytes []byte, key []byte, iv []byte, size int) ([]byte, er
 		previous = cipherBytes[start : start+size]
 	}
 
-	plain, err := algos.RemovePKCSPad(plainBytes)
+	plain, err := algos.RemovePKCSPad(plainBytes, size)
 	if err != nil {
 		return nil, err
 	}
