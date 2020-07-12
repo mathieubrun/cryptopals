@@ -1,8 +1,10 @@
 package cryptopals_test
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/mathieubrun/cryptopals/algos"
+	"github.com/mathieubrun/cryptopals/algos/xor"
 	"testing"
 
 	"github.com/mathieubrun/cryptopals/algos/aes"
@@ -29,4 +31,30 @@ func Test_Set3(t *testing.T) {
 			assert.Equal(t, expected, string(result))
 		})
 	}
+
+	t.Run("Challenge 18 : Implement CTR, the stream cipher mode", func(t *testing.T) {
+		// given
+		expected := "Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby "
+		blockSize := 16
+		cipherBytes, _ := base64.StdEncoding.DecodeString("L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==")
+		nonce := uint64(0)
+		makeBytes := aes.MakeStreamFunc([]byte("YELLOW SUBMARINE"), nonce)
+
+		// when
+		plainBytes := make([]byte, len(cipherBytes))
+		for b := 0; b <= len(cipherBytes)/16; b++ {
+			keyMaterial := makeBytes()
+
+			start := b*blockSize
+			end := start + blockSize
+			if len(cipherBytes) < end {
+				end = len(cipherBytes)
+			}
+
+			copy(plainBytes[start:end], xor.Xor(cipherBytes[start:end], keyMaterial))
+		}
+
+		// then
+		assert.Equal(t, expected, string(plainBytes))
+	})
 }
